@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <style>
+        .chart-container {
+            width: 400px;
+            height: 400px;
+            margin: 20px;
+            display: inline-block;
+        }
+        .dashboard {
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <h1>Website Analytics</h1>
+        <div class="chart-container">
+            <canvas id="deviceChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="browserChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="platformChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        // Device Type Chart
+        new Chart(document.getElementById('deviceChart'), {
+            type: 'pie',
+            data: {
+                labels: [{{range .DeviceStats}}'{{.DeviceType}}',{{end}}],
+                datasets: [{
+                    data: [{{range .DeviceStats}}{{.Percentage}},{{end}}],
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
+                }]
+            },
+            options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Device Types'
+                    }
+                }
+            }
+        });
+
+        // Browser Chart
+        new Chart(document.getElementById('browserChart'), {
+            type: 'pie',
+            data: {
+                labels: [{{range .BrowserStats}}'{{.Browser}}',{{end}}],
+                datasets: [{
+                    data: [{{range .BrowserStats}}{{.Percentage}},{{end}}],
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0']
+                }]
+            },
+            options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Browsers'
+                    }
+                }
+            }
+        });
+
+        // Platform Chart
+        new Chart(document.getElementById('platformChart'), {
+            type: 'pie',
+            data: {
+                labels: [{{range .PlatformStats}}'{{.Platform}}',{{end}}],
+                datasets: [{
+                    data: [{{range .PlatformStats}}{{.Percentage}},{{end}}],
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']
+                }]
+            },
+            options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Platforms'
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
