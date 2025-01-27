@@ -4,14 +4,15 @@ FROM golang:latest
 # Set the working directory
 WORKDIR /app
 
-# Copy the Go application
+# Copy the application files
 COPY . .
 
-# Build the Go application
-RUN go mod tidy && go build -o server
+# Build the application
+RUN go build -o server server.go
 
 # Expose the port
 EXPOSE 8080
 
-# Start the application
+# Command to start the server
 CMD ["./server"]
+
