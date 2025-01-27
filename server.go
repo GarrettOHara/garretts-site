@@ -13,6 +13,7 @@ import (
 )
 
 func main() {
+	fmt.Println("Running server...")
 	// Set up logging
 	logFile, err := os.OpenFile("requests.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
