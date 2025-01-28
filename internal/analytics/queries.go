@@ -77,6 +77,7 @@ func GetPlatformStats(db *sql.DB) ([]PlatformStat, error) {
                     WHEN user_agent LIKE '%iPhone%' THEN 'iPhone'
                     WHEN user_agent LIKE '%Windows%' THEN 'Windows'
                     WHEN user_agent LIKE '%Mac OS%' THEN 'Mac OS'
+		    WHEN user_agent LIKE '%Andriod%' THEN 'Andriod'
                     ELSE 'Other'
                 END as platform,
                 COUNT(*) as count,
@@ -88,6 +89,7 @@ func GetPlatformStats(db *sql.DB) ([]PlatformStat, error) {
                     WHEN user_agent LIKE '%iPhone%' THEN 'iPhone'
                     WHEN user_agent LIKE '%Windows%' THEN 'Windows'
                     WHEN user_agent LIKE '%Mac OS%' THEN 'Mac OS'
+		    WHEN user_agent LIKE '%Andriod%' THEN 'Andriod'
                     ELSE 'Other'
                 END
         )
@@ -135,4 +137,21 @@ func GetRequestStats(db *sql.DB) ([]TimeSeriesData, error) {
         stats = append(stats, data)
     }
     return stats, nil
+}
+
+func GetDistinctIPCount(db *sql.DB) (int, error) {
+    var count int
+    query := `
+        SELECT COUNT(DISTINCT
+            SUBSTR(ip_address, 1, INSTR(ip_address, ':') - 1) -- Extract only the IP part before the port
+        ) 
+        FROM requests
+    `
+
+    err := db.QueryRow(query).Scan(&count)
+    if err != nil {
+        return 0, err
+    }
+
+    return count, nil
 }

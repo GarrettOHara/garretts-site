@@ -38,11 +38,18 @@ func HandleAnalytics(db *sql.DB, s LoggerDB) http.HandlerFunc {
             return
         }
 
+	distinctIPCount, err := GetDistinctIPCount(db)
+        if err != nil {
+            http.Error(w, err.Error(), http.StatusInternalServerError)
+            return
+        }
+
         analytics := Analytics{
             DeviceStats:      deviceStats,
             BrowserStats:     browserStats,
             PlatformStats:    platformStats,
             RequestsOverTime: requestsOverTime,
+            DistinctIPCount:  distinctIPCount,
         }
 
         tmpl, err := template.ParseFiles("templates/analytics.html")

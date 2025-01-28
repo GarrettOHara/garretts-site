@@ -10,6 +10,7 @@ type Analytics struct {
     BrowserStats     []BrowserStat
     PlatformStats    []PlatformStat
     RequestsOverTime []TimeSeriesData
+    DistinctIPCount  int
 }
 
 type DeviceStat struct {
