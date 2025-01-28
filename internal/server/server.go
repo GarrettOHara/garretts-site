@@ -1,60 +1,64 @@
 package server
 
 import (
-    "database/sql"
-    "log"
-    "fmt"
-    "net/http"
-    "strings"
-    "time"
-    
-    "github.com/garrettohara/garretts-site/internal/analytics"
+	"database/sql"
+	"fmt"
+	"log"
+	"net/http"
+	"strings"
+	"time"
+
+	"github.com/garrettohara/garretts-site/internal/analytics"
 )
 
 type Server struct {
-    db     *sql.DB
-    logger *log.Logger
+	db     *sql.DB
+	logger *log.Logger
 }
 
 func New(db *sql.DB, logger *log.Logger) *Server {
-    return &Server{
-        db:     db,
-        logger: logger,
-    }
+	return &Server{
+		db:     db,
+		logger: logger,
+	}
 }
 
 func (s *Server) Start(addr string) error {
-    http.HandleFunc("/", s.handleHome())
-    http.HandleFunc("/analytics", analytics.HandleAnalytics(s.db, s))
-    
-    return http.ListenAndServe(addr, nil)
+	http.HandleFunc("/", s.handleHome())
+	http.HandleFunc("/analytics", analytics.HandleAnalytics(s.db, s))
+
+	return http.ListenAndServe(addr, nil)
 }
 
 func (s *Server) handleHome() http.HandlerFunc {
-    return func(w http.ResponseWriter, r *http.Request) {
-	s.CaptureStats(w, r)
-        http.ServeFile(w, r, "templates/index.html")
-    }
+	return func(w http.ResponseWriter, r *http.Request) {
+		s.CaptureStats(w, r)
+		http.ServeFile(w, r, "templates/index.html")
+	}
 }
 
 func (s *Server) CaptureStats(w http.ResponseWriter, r *http.Request) {
-    ipAddress := r.RemoteAddr
-    userAgent := r.UserAgent()
-    deviceType := "Desktop"
-    if strings.Contains(strings.ToLower(userAgent), "mobile") {
-        deviceType = "Mobile"
-    }
-    visitedAt := time.Now()
-    
-    s.logger.Printf("IP: %s | User-Agent: %s | Time: %s\n", 
-        ipAddress, userAgent, visitedAt.Format(time.RFC3339))
-    fmt.Printf("IP: %s | User-Agent: %s | Time: %s\n", 
-        ipAddress, userAgent, visitedAt.Format(time.RFC3339))
-    
-    _, err := s.db.Exec(
-        "INSERT INTO requests (ip_address, user_agent, device_type, visited_at) VALUES (?, ?, ?, ?)", 
-        ipAddress, userAgent, deviceType, visitedAt)
-    if err != nil {
-        s.logger.Printf("Failed to insert record: %v", err)
-    }
+	ipAddress := r.Header.Get("X-Forwarded-For")
+	if ipAddress == "" {
+		ipAddress = r.RemoteAddr
+	}
+
+	userAgent := r.UserAgent()
+	deviceType := "Desktop"
+	if strings.Contains(strings.ToLower(userAgent), "mobile") {
+		deviceType = "Mobile"
+	}
+	visitedAt := time.Now()
+
+	s.logger.Printf("IP: %s | User-Agent: %s | Time: %s\n",
+		ipAddress, userAgent, visitedAt.Format(time.RFC3339))
+	fmt.Printf("IP: %s | User-Agent: %s | Time: %s\n",
+		ipAddress, userAgent, visitedAt.Format(time.RFC3339))
+
+	_, err := s.db.Exec(
+		"INSERT INTO requests (ip_address, user_agent, device_type, visited_at) VALUES (?, ?, ?, ?)",
+		ipAddress, userAgent, deviceType, visitedAt)
+	if err != nil {
+		s.logger.Printf("Failed to insert record: %v", err)
+	}
 }
