@@ -26,3 +26,10 @@ go.work.sum
 
 # Ignore binary build
 server
+
+# Ignore SQLiteDB
+requests.db
+
+# Ignore Log File
+requests.log
+
