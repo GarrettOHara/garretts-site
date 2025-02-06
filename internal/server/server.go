@@ -41,6 +41,15 @@ func (s *Server) CaptureStats(w http.ResponseWriter, r *http.Request) {
 	ipAddress := r.Header.Get("X-Forwarded-For")
 	if ipAddress == "" {
 		ipAddress = r.RemoteAddr
+	} else {
+		/**
+		 * X-Forwarded-For (XFF) is a comma-separated list of IPs:
+		 *     - First IP: The original client’s IP (usually).
+		 *     - Middle IPs: Any intermediate proxies.
+		 *     - Last IP: The most recent proxy before reaching your server.
+		 **/
+		ips := strings.Split(ipAddress, ",")
+		ipAddress = strings.TrimSpace(ips[0])
 	}
 
 	userAgent := r.UserAgent()
