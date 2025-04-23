@@ -4,20 +4,26 @@ import json
 import os
 import logging
 import time
+import sys
 from sklearn.cluster import KMeans
 from sklearn.ensemble import IsolationForest
 
 # --- Setup paths ---
-DB_PATH = "../requests.db"
-OUTPUT_DIR = "../static"
-LOG_FILE = "./analysis.log"
+# Log cwd and script location for debugging
+print("CWD:", os.getcwd())
+print("FILE:", os.path.abspath(__file__))
+
+# Robust path to DB
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "..", "requests.db")
+OUTPUT_DIR = os.path.join(BASE_DIR, "..", "static")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # --- Setup logging ---
 logging.basicConfig(
-    filename=LOG_FILE,
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s: %(message)s"
+    stream=sys.stdout,
+    level=logging.DEBUG,
+    format="%(asctime)s %(levelname)s [%(filename)s:%(lineno)d] %(message)s"
 )
 
 def log_time(func):
@@ -32,9 +38,11 @@ def log_time(func):
 
 try:
     # --- Load and clean data ---
+    logging.info("Loading and cleaning data...")
     conn = sqlite3.connect(DB_PATH)
     df = pd.read_sql_query("SELECT * FROM requests", conn)
     conn.close()
+    logging.info(f"Loaded {len(df)} rows.")
 
     df['visited_at'] = pd.to_datetime(df['visited_at'], errors='coerce', utc=True)
     df = df[~df['ip_address'].str.contains(',')]
@@ -50,6 +58,7 @@ try:
 
     @log_time
     def run_clustering():
+        logging.info("Starting clustering...")
         kmeans = KMeans(n_clusters=3, random_state=42).fit(features)
         df['cluster'] = kmeans.labels_
         cluster_counts = df['cluster'].value_counts().sort_index().to_dict()
@@ -58,7 +67,8 @@ try:
 
     @log_time
     def run_time_series():
-        ts = df.set_index('visited_at').resample('H').size()
+        logging.info("Starting time series analysis...")
+        ts = df.set_index('visited_at').resample('h').size()
         ts_rolling = ts.rolling(3).mean().fillna(0)
         with open(f"{OUTPUT_DIR}/time_series.json", "w") as f:
             json.dump({
@@ -69,6 +79,7 @@ try:
 
     @log_time
     def run_anomaly_detection():
+        logging.info("Starting anomaly detection...")
         model = IsolationForest(contamination=0.1, random_state=42)
         df['anomaly'] = model.fit_predict(features)
         df['anomaly'] = df['anomaly'].map({1: 0, -1: 1})

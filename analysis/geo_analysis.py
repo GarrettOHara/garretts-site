@@ -5,21 +5,25 @@ import os
 import logging
 import time
 import requests
-from collections import Counter, defaultdict
 
 API_TOKEN = os.getenv("IPINFO_TOKEN")
 
 # --- Setup paths ---
-DB_PATH = "../requests.db"
-OUTPUT_DIR = "../static"
-LOG_FILE = "./analysis.log"
+# Log cwd and script location for debugging
+print("CWD:", os.getcwd())
+print("FILE:", os.path.abspath(__file__))
+
+# Robust path to DB
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "..", "requests.db")
+OUTPUT_DIR = os.path.join(BASE_DIR, "..", "static")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # --- Setup logging ---
 logging.basicConfig(
-    filename=LOG_FILE,
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s: %(message)s"
+    stream=sys.stdout,
+    level=logging.DEBUG,
+    format="%(asctime)s %(levelname)s [%(filename)s:%(lineno)d] %(message)s"
 )
 
 def log_time(func):

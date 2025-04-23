@@ -82,9 +82,9 @@
         // Load the data files
         async function loadData() {
             try {
-                const countryData = await fetch('../analysis/output_data/country_distribution.json').then(res => res.json());
-                const deviceData = await fetch('../analysis/output_data/device_by_country.json').then(res => res.json());
-                const mapData = await fetch('../analysis/output_data/visitor_map.json').then(res => res.json());
+                const countryData = await fetch('/static/country_distribution.json').then(res => res.json());
+                const deviceData = await fetch('/static/device_by_country.json').then(res => res.json());
+                const mapData = await fetch('/static/visitor_map.json').then(res => res.json());
                 
                 renderCountryChart(countryData);
                 renderDeviceChart(deviceData);

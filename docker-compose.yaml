@@ -1,13 +1,28 @@
+version: "3.8"
+
 services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile-app
     restart: unless-stopped
     ports:
       - "8080:8080"
     volumes:
       - ./requests.db:/app/requests.db
       - ./requests.log:/app/requests.log
+      - ./static:/app/static
     environment:
       - GO_ENV=production
+
+  analysis:
+    build:
+      context: .
+      dockerfile: Dockerfile-analysis
+    restart: unless-stopped
+    volumes:
+      - ./static:/app/static
+      - ./analysis:/app/analysis
+      - ./requests.db:/app/requests.db
+    env_file:
+      - .env

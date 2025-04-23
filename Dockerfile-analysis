@@ -1,0 +1,21 @@
+# analysis.Dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY analysis/ ./analysis/
+COPY static/ ./static/
+
+# Install cron and create cron jobs
+RUN apt-get update && apt-get install -y cron procps && \
+    # geo_analysis.py: Run at 3:00 AM on the 1st of each month
+    echo "0 3 1 * * /usr/local/bin/python3 /app/analysis/geo_analysis.py >> /proc/1/fd/1 2>&1" >> /etc/cron.d/analysis-cron && \
+    # models.py: Run every day at 4:00 AM
+    echo "0 4 * * * /usr/local/bin/python /app/analysis/models.py >> /proc/1/fd/1 2>&1" >> /etc/cron.d/analysis-cron && \
+    chmod 0644 /etc/cron.d/analysis-cron && \
+    crontab /etc/cron.d/analysis-cron
+
+CMD ["cron", "-f"]
