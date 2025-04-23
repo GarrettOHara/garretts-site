@@ -32,3 +32,4 @@ requests.db
 
 # Ignore Log File
 requests.log
+analysis/analysis.log
