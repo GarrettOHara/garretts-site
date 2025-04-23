@@ -4,11 +4,11 @@ import matplotlib.pyplot as plt
 import folium
 # from mpl_toolkits.basemap import Basemap
 
-OUTPUT_DIR = "../static/charts"
+DATA_PATH = "../static"
 MAP_FILE = "visitor_map.html"
 
 def plot_country_distribution():
-    with open(os.path.join(OUTPUT_DIR, "country_distribution.json")) as f:
+    with open(os.path.join(DATA_PATH, "country_distribution.json")) as f:
         data = json.load(f)
 
     labels = data["labels"]
@@ -24,7 +24,7 @@ def plot_country_distribution():
     plt.show()
 
 def plot_device_by_country():
-    with open(os.path.join(OUTPUT_DIR, "device_by_country.json")) as f:
+    with open(os.path.join(DATA_PATH, "device_by_country.json")) as f:
         data = json.load(f)
 
     labels = data["labels"]
@@ -65,7 +65,7 @@ def plot_device_by_country():
 #     plt.show()
 
 def plot_visitor_map():
-    with open(os.path.join(OUTPUT_DIR, "visitor_map.json")) as f:
+    with open(os.path.join(DATA_PATH, "visitor_map.json")) as f:
         data = json.load(f)
 
     m = folium.Map(location=[20, 0], zoom_start=2)
@@ -84,8 +84,8 @@ def plot_visitor_map():
             fill_opacity=0.7
         ).add_to(m)
 
-    m.save(os.path.join(OUTPUT_DIR, MAP_FILE))
-    print(f"🌍 Visitor map saved to {OUTPUT_DIR}/{MAP_FILE}")
+    m.save(os.path.join(DATA_PATH, MAP_FILE))
+    print(f"🌍 Visitor map saved to {DATA_PATH}/{MAP_FILE}")
 
 if __name__ == "__main__":
     print("📊 Displaying geolocation visualizations...")

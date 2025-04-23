@@ -9,7 +9,7 @@ from sklearn.ensemble import IsolationForest
 
 # --- Setup paths ---
 DB_PATH = "../requests.db"
-OUTPUT_DIR = "./output_data"
+OUTPUT_DIR = "../static"
 LOG_FILE = "./analysis.log"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 

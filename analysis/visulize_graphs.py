@@ -3,10 +3,10 @@ import os
 import matplotlib.pyplot as plt
 from datetime import datetime
 
-OUTPUT_DIR = "./output_data"
+DATA_PATH = "../static"
 
 def plot_time_series():
-    with open(os.path.join(OUTPUT_DIR, "time_series.json")) as f:
+    with open(os.path.join(DATA_PATH, "time_series.json")) as f:
         data = json.load(f)
 
     labels = [datetime.strptime(ts, "%Y-%m-%d %H:%M") for ts in data["labels"]]
@@ -25,7 +25,7 @@ def plot_time_series():
     plt.show()
 
 def plot_clusters():
-    with open(os.path.join(OUTPUT_DIR, "clusters.json")) as f:
+    with open(os.path.join(DATA_PATH, "clusters.json")) as f:
         data = json.load(f)
 
     clusters = data["clusters"]
@@ -38,7 +38,7 @@ def plot_clusters():
     plt.show()
 
 def plot_anomalies():
-    with open(os.path.join(OUTPUT_DIR, "anomalies.json")) as f:
+    with open(os.path.join(DATA_PATH, "anomalies.json")) as f:
         data = json.load(f)
 
     timestamps = [datetime.strptime(ts, "%Y-%m-%d %H:%M:%S") for ts in data["timestamps"]]

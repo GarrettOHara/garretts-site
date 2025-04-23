@@ -11,8 +11,8 @@ API_TOKEN = os.getenv("IPINFO_TOKEN")
 
 # --- Setup paths ---
 DB_PATH = "../requests.db"
-OUTPUT_DIR = "../static/charts"
-LOG_FILE = "../analysis/analysis.log"
+OUTPUT_DIR = "../static"
+LOG_FILE = "./analysis.log"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # --- Setup logging ---

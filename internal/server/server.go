@@ -24,6 +24,10 @@ func New(db *sql.DB, logger *log.Logger) *Server {
 }
 
 func (s *Server) Start(addr string) error {
+	// Serve static files first
+	fs := http.FileServer(http.Dir("./static"))
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
+
 	http.HandleFunc("/", s.handleHome())
 	http.HandleFunc("/analytics", analytics.HandleAnalytics(s.db, s))
 
